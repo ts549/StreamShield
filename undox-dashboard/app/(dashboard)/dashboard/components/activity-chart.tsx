@@ -17,7 +17,7 @@ export function ActivityChart() {
   return (
     <Card className="bg-card border-border">
       <CardHeader>
-        <CardTitle className="text-card-foreground">Viewer Activity (24h)</CardTitle>
+        <CardTitle className="text-card-foreground">Number of Incidents (24h)</CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>

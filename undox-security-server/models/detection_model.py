@@ -13,7 +13,7 @@ class DetectionModel:
         metrics = self.model.val(data)
         return metrics
 
-    def predict(self, source, project, save=True, save_txt=True, imgsz=640, conf=0.25):
+    def predict(self, source, project="./runs/predicts", save=True, save_txt=True, imgsz=640, conf=0.25):
         results = self.model.predict(source=source, project=project, save=save, save_txt=save_txt, imgsz=imgsz, conf=conf)
         return results
 

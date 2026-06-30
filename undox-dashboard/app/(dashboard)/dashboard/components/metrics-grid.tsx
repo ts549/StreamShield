@@ -24,8 +24,8 @@ const metrics = [
     trend: "up",
   },
   {
-    title: "Engagement Rate",
-    value: "87.4%",
+    title: "Incident Rate",
+    value: "27.4%",
     change: "+3.1%",
     icon: TrendingUp,
     trend: "up",

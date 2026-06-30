@@ -17,11 +17,15 @@ class RTMPEgress:
             "-f", "rawvideo",
             "-vcodec", "rawvideo",
             "-pix_fmt", "bgr24",
-            "-s", f"{self.width}x{self.height}",  # frame size
-            "-r", "30",                 # FPS
-            "-i", "-",                  # stdin as input
+            "-s", f"{self.width}x{self.height}",
+            "-r", "10",
+            "-use_wallclock_as_timestamps", "1",
+            "-i", "-",
             "-c:v", "libx264",
-            "-preset", "veryfast",
+            "-preset", "ultrafast",
+            "-tune", "zerolatency",
+            "-pix_fmt", "yuv420p",
+            "-g", "20",
             "-f", "flv",
             self.output_url
         ]

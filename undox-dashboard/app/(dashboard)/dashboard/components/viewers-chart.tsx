@@ -17,7 +17,7 @@ export function ViewersChart() {
   return (
     <Card className="bg-card border-border">
       <CardHeader>
-        <CardTitle className="text-card-foreground">Weekly Viewers</CardTitle>
+        <CardTitle className="text-card-foreground">Weekly Incidents</CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>

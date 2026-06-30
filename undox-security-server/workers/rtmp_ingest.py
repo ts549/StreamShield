@@ -1,4 +1,5 @@
 import subprocess
+import threading
 import numpy as np
 
 class RTMPIngest:
@@ -8,37 +9,43 @@ class RTMPIngest:
         self.height = scaled_height
         self.channels = 3
         self.frame_size = self.width * self.height * self.channels
+        self._latest = None
+        self._lock = threading.Lock()
+        self._stop = threading.Event()
+        self._reader = None
+        self.process = None
 
     def start(self):
-        """Start FFmpeg process to pull frames from RTMP stream"""
         ffmpeg_cmd = [
             "ffmpeg",
             "-i", self.input_url,
             "-f", "rawvideo",
             "-pix_fmt", "bgr24",
-            "-vf", f"scale={self.width}:{self.height}",
+            "-vf", f"scale={self.width}:{self.height},fps=10",
             "-"
         ]
         self.process = subprocess.Popen(ffmpeg_cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+        self._reader = threading.Thread(target=self._read_loop, daemon=True)
+        self._reader.start()
 
-    def get_frame(self):
-            # Read raw frame from ffmpeg (width*height*3 bytes)
-        frame_size = self.width * self.height * self.channels
-        raw_frame = self.process.stdout.read(frame_size)
-
-        if len(raw_frame) != frame_size:
-            return None
-
-        return raw_frame
+    def _read_loop(self):
+        while not self._stop.is_set():
+            raw = self.process.stdout.read(self.frame_size)
+            if len(raw) != self.frame_size:
+                break
+            with self._lock:
+                self._latest = raw
 
     def get_frame_as_array(self):
-        raw_frame = self.get_frame()
-        if raw_frame is None:
+        with self._lock:
+            raw = self._latest
+            self._latest = None
+        if raw is None:
             return None
-        return np.frombuffer(raw_frame, np.uint8).reshape((self.height, self.width, self.channels))
+        return np.frombuffer(raw, np.uint8).reshape((self.height, self.width, self.channels))
 
     def stop(self):
-        """Stop FFmpeg process"""
+        self._stop.set()
         if self.process:
             self.process.kill()
             self.process = None
